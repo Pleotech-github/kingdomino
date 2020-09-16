@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 board = cv2.imread('1.jpg')
 hsv = cv2.cvtColor(board, cv2.COLOR_BGR2HSV)
 gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
@@ -21,7 +22,10 @@ upperLB = np.array([250, 255, 255])
 LBmask = cv2.inRange(hsv, lowerLB, upperLB)
 LBres = cv2.bitwise_and(board, board, mask=LBmask)
 
-def rasterize(picture):
+greenCards = []
+blueCards = []
+
+def rasterize(picture, cardAr):
     cards = []
     for i in range(1, 6):
         for j in range(1, 6):
@@ -29,7 +33,15 @@ def rasterize(picture):
             cards.append(card1)
 
     for i in range(0, 25):
-        cv2.imshow("Card" + str(i + 1), cards[i])
+        result = cv2.mean(cards[i])
+        print(result[1])
+        if result[1] > 10.0:
+            cardAr.append(cards[i])
+            cv2.imshow("Card" + str(i + 1), cards[i])
+
+#rasterize(LGres, greenCards)
+
+rasterize(LBres, blueCards)
 
 cv2.imshow('board', board)
 cv2.imshow('hsv', hsv)
