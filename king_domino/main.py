@@ -8,8 +8,8 @@ w, h = board.shape[::-2]
 pieceH = w / 5
 pieceW = h / 5
 
-lowerLG = np.array([30, 100, 130])
-upperLG = np.array([100, 255, 180])
+lowerLG = np.array([35, 100, 130])
+upperLG = np.array([95, 255, 180])
 
 LGmask = cv2.inRange(hsv, lowerLG, upperLG)
 LGres = cv2.bitwise_and(board, board, mask=LGmask)
@@ -20,6 +20,16 @@ upperLB = np.array([250, 255, 255])
 
 LBmask = cv2.inRange(hsv, lowerLB, upperLB)
 LBres = cv2.bitwise_and(board, board, mask=LBmask)
+
+def rasterize(picture):
+    cards = []
+    for i in range(1, 6):
+        for j in range(1, 6):
+            card1 = picture[(j - 1) * 100:(j - 1) * 100 + 100, (i - 1) * 100:(i - 1) * 100 + 100]
+            cards.append(card1)
+
+    for i in range(0, 25):
+        cv2.imshow("Card" + str(i + 1), cards[i])
 
 cv2.imshow('board', board)
 cv2.imshow('hsv', hsv)
