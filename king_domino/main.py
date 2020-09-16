@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-board = cv2.imread('1.jpg')
+board = cv2.imread('2.jpg')
 hsv = cv2.cvtColor(board, cv2.COLOR_BGR2HSV)
 gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 w, h = board.shape[::-2]
@@ -22,15 +22,31 @@ upperLB = np.array([250, 255, 255])
 LBmask = cv2.inRange(hsv, lowerLB, upperLB)
 LBres = cv2.bitwise_and(board, board, mask=LBmask)
 
+#Dark green (forest)
 lowerDG = np.array([25, 25, 15])
 upperDG = np.array([70, 170, 70])
 
 DGmask = cv2.inRange(hsv, lowerDG, upperDG)
 DGres = cv2.bitwise_and(board, board, mask=DGmask)
 
+#Yellow (fields)
+lowerYL = np.array([25, 170, 170])
+upperYL = np.array([30, 255, 255])
+
+YLmask = cv2.inRange(hsv, lowerYL, upperYL)
+YLres = cv2.bitwise_and(board, board, mask=YLmask)
+
+#Grey?
+lowerGR = np.array([15, 0, 60])
+upperGR = np.array([30, 145, 160])
+
+GRmask = cv2.inRange(hsv, lowerGR, upperGR)
+GRres = cv2.bitwise_and(board, board, mask=GRmask)
+
 greenCards = []
 blueCards = []
 darkGreenCards = []
+yellowCards = []
 
 def rasterize(picture, cardAr):
     cards = []
@@ -51,13 +67,17 @@ def rasterize(picture, cardAr):
 
 #rasterize(DGres, darkGreenCards)
 
+rasterize(GRres, yellowCards)
+
 cv2.imshow('board', board)
 cv2.imshow('hsv', hsv)
-cv2.imshow('LGmask', LGmask)
-cv2.imshow('LGres', LGres)
-cv2.imshow('LBmask', LBmask)
-cv2.imshow('LBres', LBres)
-cv2.imshow('DGmask',DGmask)
-cv2.imshow('DGres', DGres)
+#cv2.imshow('LGmask', LGmask)
+#cv2.imshow('LGres', LGres)
+#cv2.imshow('LBmask', LBmask)
+#cv2.imshow('LBres', LBres)
+#v2.imshow('DGmask',DGmask)
+#cv2.imshow('DGres', DGres)
+#cv2.imshow('YLres', YLres)
+cv2.imshow('GRres', GRres)
 
 cv2.waitKey(0)
