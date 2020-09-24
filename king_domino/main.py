@@ -108,6 +108,50 @@ def countScore2(color, cardAr):
                     scoreArray[i][j] = groupMax
     print(scoreArray)
 
+def countScore3(color, cardAr):
+    groupMax = 1
+    scoreArray = np.zeros((5, 5))
+    first = True
+    tempI = 0
+    tempJ = 0
+    for i in range(0,5):
+        for j in range(0,5):
+            if cardAr[i][j] != 0:
+                if first == True:
+                    scoreArray[i][j] = 1
+                    first = False
+                    continue
+
+                oI = i
+                oJ = j
+                
+                while(True):
+                    if i < 4 and j < 4 and j > 0:
+                        if cardAr[i+1][j] != 0:
+                            tempI = i+1
+                            tempJ = j
+                            scoreArray[i][j] = groupMax
+                            scoreArray[tempI][tempJ] = groupMax
+                        if cardAr[i][j+1] != 0:
+                            pass
+                        if cardAr[i][j-1] != 0:
+                            pass
+                    elif i == 4:
+                        if cardAr[i][j+1] != 0:
+                            pass
+                    elif j == 4:
+                        if cardAr[i+1][j] != 0:
+                            pass
+                        if cardAr[i][j-1] != 0:
+                            pass
+                    elif j == 0:
+                        if cardAr[i][j-1] != 0:
+                            pass
+                    else:
+                        break
+                    pass
+                groupMax += 1
+    pass
 
 cardArray1 = np.zeros((5,5))
 
