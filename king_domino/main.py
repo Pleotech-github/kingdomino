@@ -8,6 +8,7 @@ gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 w, h = board.shape[::-2]
 pieceH = w / 5
 pieceW = h / 5
+visited = []
 
 lowerLG = np.array([35, 100, 130])
 upperLG = np.array([95, 255, 180])
@@ -51,6 +52,8 @@ blueCards = []
 darkGreenCards = []
 yellowCards = []
 
+colorArray = [LGres, LBres, DGres, YLres, GRres]
+
 class Score:
     def __init__(self, card, score):
         self.card = card
@@ -58,106 +61,14 @@ class Score:
 
 cards = []
 
-def countScore2(color, cardAr):
-    groupMax = 1
-    scoreArray = np.zeros((5, 5))
-    first = True
-    sorted = False
-    for i in range(0,5):
-        for j in range(0,5):
-            if cardAr[i][j] != 0:
-                if first == True:
-                    scoreArray[i][j] = 1
-                    first = False
-                    continue
-                sorted = False
-                for a in range(0,5):
-                    for b in range(0,5):
-                        if cardAr[a][b] != 0:
-                            #print("a-i: " + str(abs(a - i)))
-                            #print("b-j:" + str(abs(b-j)))
-                            if a-i == 0 and abs(b-j) == 1:
-                                if scoreArray[a][b] == 0:
-                                    scoreArray[i][j] = groupMax
-                                    scoreArray[a][b] = groupMax
-                                    print("PLUSA" + str(groupMax))
-                                else:
-                                    scoreArray[i][j] = scoreArray[a][b]
-                                sorted = True
-                                print("A")
-                                break
-                            elif b-j == 0 and abs(a-i) == 1:
-                                if scoreArray[a][b] == 0:
-                                    scoreArray[i][j] = groupMax
-                                    scoreArray[a][b] = groupMax
-                                    print("PLUSB")
-                                else:
-                                    scoreArray[i][j] = scoreArray[a][b]
-                                    print("ELSE")
-                                sorted = True
-                                print("B")
-                                break
-                            else:
-                                groupMax+=1
-                                print("END")
-                if sorted == False:
-                    print("D")
-                    print("a-i: " + str(abs(a - i)))
-                    print("b-j:" + str(abs(b-j)))
-                    groupMax += 1
-                    scoreArray[i][j] = groupMax
-    print(scoreArray)
 
-def countScore3(color, cardAr):
-    groupMax = 1
-    scoreArray = np.zeros((5, 5))
-    first = True
-    tempI = 0
-    tempJ = 0
-    for i in range(0,5):
-        for j in range(0,5):
-            if cardAr[i][j] != 0:
-                if first == True:
-                    scoreArray[i][j] = 1
-                    first = False
-                    continue
-
-                oI = i
-                oJ = j
-                
-                while(True):
-                    if i < 4 and j < 4 and j > 0:
-                        if cardAr[i+1][j] != 0:
-                            tempI = i+1
-                            tempJ = j
-                            scoreArray[i][j] = groupMax
-                            scoreArray[tempI][tempJ] = groupMax
-                        if cardAr[i][j+1] != 0:
-                            pass
-                        if cardAr[i][j-1] != 0:
-                            pass
-                    elif i == 4:
-                        if cardAr[i][j+1] != 0:
-                            pass
-                    elif j == 4:
-                        if cardAr[i+1][j] != 0:
-                            pass
-                        if cardAr[i][j-1] != 0:
-                            pass
-                    elif j == 0:
-                        if cardAr[i][j-1] != 0:
-                            pass
-                    else:
-                        break
-                    pass
-                groupMax += 1
-    pass
 
 cardArray1 = np.zeros((5,5))
 
-def rasterize(picture, cardAr, color):
 
-    sc = Score(color,0)
+def rasterize(picture, cardAr):
+
+    #sc = Score(color,0)
 
     for i in range(1, 6):
         for j in range(1, 6):
@@ -169,8 +80,8 @@ def rasterize(picture, cardAr, color):
                 cardArray1[i - 1][j - 1] = 1
                 #cardAr.append(cards[i])
                 cv2.imshow("Card " + str(i + 1), card)
-    print(cardArray1)
-    countScore2("b", cardArray1)
+    #print(cardArray1)
+
 
 
 
@@ -178,7 +89,55 @@ def rasterize(picture, cardAr, color):
                     #scoreAr = np.append(scoreAr, tempAr, axis=0)
 
 
-rasterize(LGres, greenCards, "b")
+# GrassFire algorithmen til at finde sorte pixels,
+# som tilhøre en større gruppe af sorte pixels
+def grassFire(newX: int, newY: int, groupNumber: int):
+    if [newX + 1, newY] not in visited:
+        XYArray.append([newX, newY])
+        visited.append([newX, newY])
+
+    if cardArray[newX + 1][newY] == 1 and cardArray[[newX + 1][newY]] not in visited:
+        grassFire(newX + 1, newY, groupNumber)
+
+    elif cardArray[newX][newY + 1] == 1 and cardArray[[newX][newY + 1]] not in visited:
+        grassFire(newX, newY + 1, groupNumber)
+
+    elif cardArray[newX - 1][newY] == 1 and cardArray[[newX - 1][newY]] not in visited:
+        grassFire(newX - 1, newY, groupNumber)
+
+    elif cardArray[newX][newY - 1] == 1 and cardArray[[newX][newY - 1]] not in visited:
+        grassFire(newX, newY - 1,  groupNumber)
+
+    else:
+        index = XYArray.index([newX, newY])
+        if index == 0:
+            cv2.rectangle(board, (min(XYArray)), (max(XYArray)), (0, 255, 0), 2)
+            print(XYArray)
+        else:
+            index = index - 1
+            grassFire(XYArray[index][0], visited[index][1])
+
+
+# Pixel detection
+for i in colorArray:
+    groupNumber = 0
+    rasterize(DGres, visited)
+
+    for x in range(0, 5):
+        for y in range(0, 5):
+
+            if cardArray[x][y] == 1 and [x, y] not in visited:
+                XYArray = []
+                groupNumber += 1
+                grassFire(x, y, groupNumber)
+                print('knep mig!')
+            else:
+                visited.append([x, y])
+
+
+
+
+#rasterize(LGres, greenCards)
 
 #rasterize(LBres, blueCards)
 
@@ -193,8 +152,8 @@ cv2.imshow('hsv', hsv)
 #cv2.imshow('LBmask', LBmask)
 #cv2.imshow('LBres', LBres)
 #v2.imshow('DGmask',DGmask)
-#cv2.imshow('DGres', DGres)
+cv2.imshow('DGres', DGres)
 #cv2.imshow('YLres', YLres)
-cv2.imshow('GRres', GRres)
+#cv2.imshow('GRres', GRres)
 
 cv2.waitKey(0)
