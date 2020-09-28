@@ -92,28 +92,29 @@ def rasterize(picture, cardAr):
 # GrassFire algorithmen til at finde sorte pixels,
 # som tilhøre en større gruppe af sorte pixels
 def grassFire(newX: int, newY: int, groupNumber: int):
-    if [newX + 1, newY] not in visited:
-        XYArray.append([newX, newY])
-        visited.append([newX, newY])
 
-    if cardArray[newX + 1][newY] == 1 and cardArray[[newX + 1][newY]] not in visited:
+    XYArray.append([newX, newY])
+    visited.append([newX, newY])
+    print(cardArray1[newX][newY])
+
+    if newX < 4 and cardArray1[newX + 1][newY] == 1 and cardArray1[newX + 1][newY] not in visited:
         grassFire(newX + 1, newY, groupNumber)
-
-    elif cardArray[newX][newY + 1] == 1 and cardArray[[newX][newY + 1]] not in visited:
+        print('hej')
+    elif newY < 4 and cardArray1[newX][newY + 1] == 1 and cardArray1[newX][newY + 1] not in visited:
         grassFire(newX, newY + 1, groupNumber)
-
-    elif cardArray[newX - 1][newY] == 1 and cardArray[[newX - 1][newY]] not in visited:
+        print('hej2')
+    elif newX > 0 and cardArray1[newX - 1][newY] == 1 and cardArray1[newX - 1][newY] not in visited:
         grassFire(newX - 1, newY, groupNumber)
-
-    elif cardArray[newX][newY - 1] == 1 and cardArray[[newX][newY - 1]] not in visited:
+        print('hej3')
+    elif newY > 0 and cardArray1[newX][newY - 1] == 1 and cardArray1[newX][newY - 1] not in visited:
         grassFire(newX, newY - 1,  groupNumber)
-
+        print('hej4')
     else:
         index = XYArray.index([newX, newY])
         if index == 0:
-            cv2.rectangle(board, (min(XYArray)), (max(XYArray)), (0, 255, 0), 2)
-            print(XYArray)
+            print('')
         else:
+
             index = index - 1
             grassFire(XYArray[index][0], visited[index][1])
 
@@ -125,12 +126,10 @@ for i in colorArray:
 
     for x in range(0, 5):
         for y in range(0, 5):
-
-            if cardArray[x][y] == 1 and [x, y] not in visited:
+            if cardArray1[x][y] == 1 and [x, y] not in visited:
                 XYArray = []
                 groupNumber += 1
                 grassFire(x, y, groupNumber)
-                print('knep mig!')
             else:
                 visited.append([x, y])
 
