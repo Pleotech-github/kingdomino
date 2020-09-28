@@ -1,3 +1,5 @@
+import sys
+
 import cv2
 import numpy as np
 
@@ -87,8 +89,7 @@ def rasterize(picture, cardAr):
 
                     #tempAr = np.array([group,i-1,j-1])
                     #scoreAr = np.append(scoreAr, tempAr, axis=0)
-
-
+    
 # GrassFire algorithmen til at finde sorte pixels,
 # som tilhøre en større gruppe af sorte pixels
 def grassFire(newX: int, newY: int, groupNumber: int):
@@ -97,16 +98,16 @@ def grassFire(newX: int, newY: int, groupNumber: int):
     visited.append([newX, newY])
     print(cardArray1[newX][newY])
 
-    if newX < 4 and cardArray1[newX + 1][newY] == 1 and cardArray1[newX + 1][newY] not in visited:
+    if newX < 4 and cardArray1[newX + 1][newY] == 1 and int(cardArray1[newX + 1][newY]) not in visited:
         grassFire(newX + 1, newY, groupNumber)
         print('hej')
-    elif newY < 4 and cardArray1[newX][newY + 1] == 1 and cardArray1[newX][newY + 1] not in visited:
+    elif newY < 4 and cardArray1[newX][newY + 1] == 1 and int(cardArray1[newX][newY + 1]) not in visited:
         grassFire(newX, newY + 1, groupNumber)
         print('hej2')
-    elif newX > 0 and cardArray1[newX - 1][newY] == 1 and cardArray1[newX - 1][newY] not in visited:
+    elif newX > 0 and cardArray1[newX - 1][newY] == 1 and int(cardArray1[newX - 1][newY]) not in visited:
         grassFire(newX - 1, newY, groupNumber)
         print('hej3')
-    elif newY > 0 and cardArray1[newX][newY - 1] == 1 and cardArray1[newX][newY - 1] not in visited:
+    elif newY > 0 and cardArray1[newX][newY - 1] == 1 and int(cardArray1[newX][newY - 1]) not in visited:
         grassFire(newX, newY - 1,  groupNumber)
         print('hej4')
     else:
