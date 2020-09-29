@@ -1,5 +1,3 @@
-import sys
-
 import cv2
 import numpy as np
 
@@ -10,7 +8,7 @@ gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 w, h = board.shape[::-2]
 pieceH = w / 5
 pieceW = h / 5
-visited = []
+visited = np.zeros((5,5))
 
 lowerLG = np.array([35, 100, 130])
 upperLG = np.array([95, 255, 180])
@@ -85,57 +83,57 @@ def rasterize(picture, cardAr):
     #print(cardArray1)
 
 
-
-
-                    #tempAr = np.array([group,i-1,j-1])
-                    #scoreAr = np.append(scoreAr, tempAr, axis=0)
-    
-# GrassFire algorithmen til at finde sorte pixels,
-# som tilhøre en større gruppe af sorte pixels
-def grassFire(newX: int, newY: int, groupNumber: int):
-
-    XYArray.append([newX, newY])
-    visited.append([newX, newY])
-    print(cardArray1[newX][newY])
-
-    if newX < 4 and cardArray1[newX + 1][newY] == 1 and int(cardArray1[newX + 1][newY]) not in visited:
-        grassFire(newX + 1, newY, groupNumber)
+def grassFrie(x, y, groupSize, XYArray, groupNumber):
+    visited[y][x] = 1
+    groupSize.append(groupNumber)
+    XYArray.append([y, x])
+    if x < 4 and visited[y][x + 1] != 1 and cardArray1[y][x + 1] == 1:
         print('hej')
-    elif newY < 4 and cardArray1[newX][newY + 1] == 1 and int(cardArray1[newX][newY + 1]) not in visited:
-        grassFire(newX, newY + 1, groupNumber)
+        grassFrie(x + 1, y, groupSize, XYArray, groupNumber)
+
+    elif y < 4 and visited[y + 1][x] != 1 and cardArray1[y + 1][x] == 1:
         print('hej2')
-    elif newX > 0 and cardArray1[newX - 1][newY] == 1 and int(cardArray1[newX - 1][newY]) not in visited:
-        grassFire(newX - 1, newY, groupNumber)
+        grassFrie(x, y + 1, groupSize, XYArray, groupNumber)
+
+    elif x > 0 and visited[y][x - 1] != 1 and cardArray1[y][x - 1] == 1:
         print('hej3')
-    elif newY > 0 and cardArray1[newX][newY - 1] == 1 and int(cardArray1[newX][newY - 1]) not in visited:
-        grassFire(newX, newY - 1,  groupNumber)
+        grassFrie(x - 1, y, groupSize, XYArray, groupNumber)
+
+    elif y > 0 and visited[y - 1][x] != 1 and cardArray1[y - 1][x] == 1:
         print('hej4')
+        grassFrie(x, y - 1, groupSize, XYArray, groupNumber)
+
     else:
-        index = XYArray.index([newX, newY])
-        if index == 0:
-            print('')
+        print('hej5')
+        rowIndex = XYArray.index([y, x])
+        if rowIndex == 0:
+            print('done')
         else:
+            rowIndex -= 1
+            y, x = XYArray[rowIndex]
+            print(y)
+            print(x)
+            grassFrie(x, y, groupSize, XYArray, groupNumber)
 
-            index = index - 1
-            grassFire(XYArray[index][0], visited[index][1])
 
-
-# Pixel detection
-for i in colorArray:
+def count():
     groupNumber = 0
-    rasterize(DGres, visited)
-
-    for x in range(0, 5):
-        for y in range(0, 5):
-            if cardArray1[x][y] == 1 and [x, y] not in visited:
-                XYArray = []
+    groupSize = []
+    for rows in range(0, 5):
+        for cols in range(0, 5):
+            if cardArray1[rows][cols] == 1 and visited[rows][cols] != 1:
                 groupNumber += 1
-                grassFire(x, y, groupNumber)
+                XYArray = []
+                grassFrie(rows, cols, groupSize, XYArray, groupNumber)
             else:
-                visited.append([x, y])
+                groupSize.append(0)
+                visited[cols][rows] = 1
+
+    print(groupSize)
 
 
-
+rasterize(DGres, visited)
+count()
 
 #rasterize(LGres, greenCards)
 
