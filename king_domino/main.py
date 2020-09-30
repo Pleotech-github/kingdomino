@@ -80,43 +80,44 @@ def rasterize(picture, cardAr):
                 cardArray1[i - 1][j - 1] = 1
                 #cardAr.append(cards[i])
                 cv2.imshow("Card " + str(i + 1), card)
-    #print(cardArray1)
+    print(cardArray1)
 
 
-def grassFrie(x, y, groupSize, XYArray, groupNumber):
-    visited[y][x] = 1
-    groupSize.append(groupNumber)
-    XYArray.append([y, x])
-    if x < 4 and visited[y][x + 1] != 1 and cardArray1[y][x + 1] == 1:
-        print('hej')
-        grassFrie(x + 1, y, groupSize, XYArray, groupNumber)
+def grassFrie(x, y, groupSize, XYArray, groupNumber, append):
+    print(y)
+    print(x)
+    print('')
 
-    elif y < 4 and visited[y + 1][x] != 1 and cardArray1[y + 1][x] == 1:
-        print('hej2')
-        grassFrie(x, y + 1, groupSize, XYArray, groupNumber)
+    if append == True:
+        visited[x][y] = 1
+        groupSize.append(groupNumber)
+        XYArray.append([y, x])
+    append = True
 
-    elif x > 0 and visited[y][x - 1] != 1 and cardArray1[y][x - 1] == 1:
-        print('hej3')
-        grassFrie(x - 1, y, groupSize, XYArray, groupNumber)
+    if x < 4 and visited[x + 1][y] != 1 and cardArray1[y][x + 1] == 1:
+        grassFrie(x + 1, y, groupSize, XYArray, groupNumber, append)
 
-    elif y > 0 and visited[y - 1][x] != 1 and cardArray1[y - 1][x] == 1:
-        print('hej4')
-        grassFrie(x, y - 1, groupSize, XYArray, groupNumber)
+    elif y < 4 and visited[x][y + 1] != 1 and cardArray1[y + 1][x] == 1:
+        grassFrie(x, y + 1, groupSize, XYArray, groupNumber, append)
+
+    elif x > 0 and visited[x - 1][y] != 1 and cardArray1[y][x - 1] == 1:
+        grassFrie(x - 1, y, groupSize, XYArray, groupNumber, append)
+
+    elif y > 0 and visited[x][y - 1] != 1 and cardArray1[y - 1][x] == 1:
+        grassFrie(x, y - 1, groupSize, XYArray, groupNumber, append)
+
+    elif XYArray.index([y, x]) != 0:
+        append = False
+        rowIndex = XYArray.index([y, x]) - 1
+        y, x = XYArray[rowIndex]
+        grassFrie(x, y, groupSize, XYArray, groupNumber, append)
 
     else:
-        print('hej5')
-        rowIndex = XYArray.index([y, x])
-        if rowIndex == 0:
-            print('done')
-        else:
-            rowIndex -= 1
-            y, x = XYArray[rowIndex]
-            print(y)
-            print(x)
-            grassFrie(x, y, groupSize, XYArray, groupNumber)
+        print('done')
 
 
 def count():
+    rasterize(LGres, visited)
     groupNumber = 0
     groupSize = []
     for rows in range(0, 5):
@@ -124,33 +125,21 @@ def count():
             if cardArray1[rows][cols] == 1 and visited[rows][cols] != 1:
                 groupNumber += 1
                 XYArray = []
-                grassFrie(rows, cols, groupSize, XYArray, groupNumber)
+                append = True
+                grassFrie(rows, cols, groupSize, XYArray, groupNumber,append)
             else:
                 groupSize.append(0)
                 visited[cols][rows] = 1
-
     print(groupSize)
 
-
-rasterize(DGres, visited)
 count()
 
-#rasterize(LGres, greenCards)
-
-#rasterize(LBres, blueCards)
-
-#rasterize(DGres, darkGreenCards)
-
-#rasterize(GRres, yellowCards)
 
 cv2.imshow('board', board)
 cv2.imshow('hsv', hsv)
-#cv2.imshow('LGmask', LGmask)
-#cv2.imshow('LGres', LGres)
-#cv2.imshow('LBmask', LBmask)
+cv2.imshow('LGres', LGres)
 #cv2.imshow('LBres', LBres)
-#v2.imshow('DGmask',DGmask)
-cv2.imshow('DGres', DGres)
+#cv2.imshow('DGres', DGres)
 #cv2.imshow('YLres', YLres)
 #cv2.imshow('GRres', GRres)
 
