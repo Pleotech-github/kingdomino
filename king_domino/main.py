@@ -8,7 +8,7 @@ gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 w, h = board.shape[::-2]
 pieceH = w / 5
 pieceW = h / 5
-visited = np.zeros((5,5))
+visited = np.zeros((5, 5))
 
 lowerLG = np.array([35, 100, 130])
 upperLG = np.array([95, 255, 180])
@@ -77,7 +77,7 @@ def rasterize(picture, cardAr):
 
             result = cv2.mean(card)
             if result[1] > 10.0:
-                cardArray1[i - 1][j - 1] = 1
+                cardArray1[j - 1][i - 1] = 1
                 #cardAr.append(cards[i])
                 cv2.imshow("Card " + str(i + 1), card)
     print(cardArray1)
@@ -94,16 +94,16 @@ def grassFrie(x, y, groupSize, XYArray, groupNumber, append):
         XYArray.append([y, x])
     append = True
 
-    if x < 4 and visited[x + 1][y] != 1 and cardArray1[y][x + 1] == 1:
+    if x < 4 and visited[x + 1][y] != 1 and cardArray1[x + 1][y] == 1:
         grassFrie(x + 1, y, groupSize, XYArray, groupNumber, append)
 
-    elif y < 4 and visited[x][y + 1] != 1 and cardArray1[y + 1][x] == 1:
+    elif y < 4 and visited[x][y + 1] != 1 and cardArray1[x][y + 1] == 1:
         grassFrie(x, y + 1, groupSize, XYArray, groupNumber, append)
 
-    elif x > 0 and visited[x - 1][y] != 1 and cardArray1[y][x - 1] == 1:
+    elif x > 0 and visited[x - 1][y] != 1 and cardArray1[x - 1][y] == 1:
         grassFrie(x - 1, y, groupSize, XYArray, groupNumber, append)
 
-    elif y > 0 and visited[x][y - 1] != 1 and cardArray1[y - 1][x] == 1:
+    elif y > 0 and visited[x][y - 1] != 1 and cardArray1[x][y - 1] == 1:
         grassFrie(x, y - 1, groupSize, XYArray, groupNumber, append)
 
     elif XYArray.index([y, x]) != 0:
@@ -114,6 +114,7 @@ def grassFrie(x, y, groupSize, XYArray, groupNumber, append):
 
     else:
         print('done')
+        print('')
 
 
 def count():
@@ -122,14 +123,14 @@ def count():
     groupSize = []
     for rows in range(0, 5):
         for cols in range(0, 5):
+            print(visited)
             if cardArray1[rows][cols] == 1 and visited[rows][cols] != 1:
                 groupNumber += 1
                 XYArray = []
                 append = True
                 grassFrie(rows, cols, groupSize, XYArray, groupNumber,append)
             else:
-                groupSize.append(0)
-                visited[cols][rows] = 1
+                visited[rows][cols] = 1
     print(groupSize)
 
 count()
