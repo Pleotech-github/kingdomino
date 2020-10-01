@@ -8,7 +8,6 @@ gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
 w, h = board.shape[::-2]
 pieceH = w / 5
 pieceW = h / 5
-visited = np.zeros((5, 5))
 
 lowerLG = np.array([35, 100, 130])
 upperLG = np.array([95, 255, 180])
@@ -79,14 +78,10 @@ def rasterize(picture, cardAr):
             if result[1] > 10.0:
                 cardArray1[j - 1][i - 1] = 1
                 #cardAr.append(cards[i])
-                cv2.imshow("Card " + str(i + 1), card)
-    print(cardArray1)
 
 
-def grassFrie(x, y, groupSize, XYArray, groupNumber, append):
-    print(y)
-    print(x)
-    print('')
+def grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append):
+
 
     if append == True:
         visited[x][y] = 1
@@ -95,50 +90,53 @@ def grassFrie(x, y, groupSize, XYArray, groupNumber, append):
     append = True
 
     if x < 4 and visited[x + 1][y] != 1 and cardArray1[x + 1][y] == 1:
-        grassFrie(x + 1, y, groupSize, XYArray, groupNumber, append)
+        grassFrie(x + 1, y, groupSize, visited, XYArray, groupNumber, append)
 
     elif y < 4 and visited[x][y + 1] != 1 and cardArray1[x][y + 1] == 1:
-        grassFrie(x, y + 1, groupSize, XYArray, groupNumber, append)
+        grassFrie(x, y + 1, groupSize, visited, XYArray, groupNumber, append)
 
     elif x > 0 and visited[x - 1][y] != 1 and cardArray1[x - 1][y] == 1:
-        grassFrie(x - 1, y, groupSize, XYArray, groupNumber, append)
+        grassFrie(x - 1, y, groupSize, visited, XYArray, groupNumber, append)
 
     elif y > 0 and visited[x][y - 1] != 1 and cardArray1[x][y - 1] == 1:
-        grassFrie(x, y - 1, groupSize, XYArray, groupNumber, append)
+        grassFrie(x, y - 1, groupSize, visited, XYArray, groupNumber, append)
 
     elif XYArray.index([y, x]) != 0:
         append = False
         rowIndex = XYArray.index([y, x]) - 1
         y, x = XYArray[rowIndex]
-        grassFrie(x, y, groupSize, XYArray, groupNumber, append)
+        grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append)
 
     else:
-        print('done')
         print('')
 
 
 def count():
-    rasterize(LGres, visited)
+    img = colorArray[4]
+    visited = np.zeros((5, 5))
+    rasterize(img, visited)
+    cv2.imshow('test', img)
     groupNumber = 0
     groupSize = []
     for rows in range(0, 5):
         for cols in range(0, 5):
-            print(visited)
             if cardArray1[rows][cols] == 1 and visited[rows][cols] != 1:
                 groupNumber += 1
                 XYArray = []
                 append = True
-                grassFrie(rows, cols, groupSize, XYArray, groupNumber,append)
+                grassFrie(rows, cols, groupSize, visited, XYArray, groupNumber, append)
             else:
                 visited[rows][cols] = 1
-    print(groupSize)
+    amount = {i: groupSize.count(i) for i in groupSize}
+    for i in range(1, len(amount) + 1):
+        print(amount[i])
 
 count()
 
 
 cv2.imshow('board', board)
 cv2.imshow('hsv', hsv)
-cv2.imshow('LGres', LGres)
+#cv2.imshow('LGres', LGres)
 #cv2.imshow('LBres', LBres)
 #cv2.imshow('DGres', DGres)
 #cv2.imshow('YLres', YLres)
