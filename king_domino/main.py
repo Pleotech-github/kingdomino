@@ -1,12 +1,13 @@
 import cv2
 import numpy as np
+import math
 
 
 board = cv2.imread('1.jpg')
-tem1 = cv2.imread('template1.jpg')
-tem2 = cv2.imread('template2.jpg')
-tem3 = cv2.imread('template3.jpg')
-tem4 = cv2.imread('template4.jpg')
+tem1 = cv2.imread('grayTemp1.jpg')
+tem2 = cv2.imread('grayTemp2.jpg')
+tem3 = cv2.imread('grayTemp3.jpg')
+tem4 = cv2.imread('grayTemp4.jpg')
 
 hsv = cv2.cvtColor(board, cv2.COLOR_BGR2HSV)
 gray = cv2.cvtColor(board, cv2.COLOR_BGR2GRAY)
@@ -50,14 +51,6 @@ upperGR = np.array([30, 145, 160])
 GRmask = cv2.inRange(hsv, lowerGR, upperGR)
 GRres = cv2.bitwise_and(board, board, mask=GRmask)
 
-#Cronws
-lowerCrown = np.array([25, 170, 170])
-upperCrown = np.array([50, 255, 255])
-
-crownMask = cv2.inRange(hsv, lowerCrown, upperCrown)
-crownRes = cv2.bitwise_and(board, board, mask=crownMask)
-cv2.imshow('crowns', crownRes)
-
 rows, cols = (5,5)
 cardArray = [[0]*cols]*rows
 
@@ -66,7 +59,7 @@ blueCards = []
 darkGreenCards = []
 yellowCards = []
 
-templateArray = [tem1, tem2, tem3, tem4]
+templateArray = [grayTem1, grayTem2, grayTem3, grayTem4]
 colorArray = [LGres, LBres, DGres, YLres, GRres]
 
 class Score:
@@ -79,28 +72,40 @@ cards = []
 cardArray1 = np.zeros((5, 5))
 crownArray = np.zeros((5, 5))
 
+thresholdDist = 15
+detectedObjects = []
+def notInList(newObject):
+    for detectedObject in detectedObjects:
+        if math.hypot(newObject[0]-detectedObject[0], newObject[1]-detectedObject[1]) < thresholdDist:
+            return False
+    return True
 
-w, h = tem1.shape[::-2]
-res = cv2.matchTemplate(gray, grayTem3, cv2.TM_CCOEFF_NORMED)
-threshold = 0.8
-loc = np.where(res >= threshold)
-for pt in zip(*loc[::-1]):
-    cv2.rectangle(board, pt, (pt[0] + w, pt[1] + h), (255, 50, 50), 2)
-cv2.imshow('croswns', res)
+
 
 def rasterize(picture):
-
     for i in range(1, 6):
         for j in range(1, 6):
             card = picture[(j - 1) * 100:(j - 1) * 100 + 100, (i - 1) * 100:(i - 1) * 100 + 100]
             cards.append(card)
 
+            for tem in templateArray:
+                h = tem.shape[0]
+                w = tem.shape[1]
+                res = cv2.matchTemplate(gray, tem, cv2.TM_CCOEFF_NORMED)
+                threshold = 0.75
+                loc = np.where(res >= threshold)
+
+                for pt in zip(*loc[::-1]):
+                    if len(detectedObjects) == 0 or notInList(pt):
+                        cv2.rectangle(board, pt, (pt[0] + w, pt[1] + h), (0, 0, 0), 2)
+                        detectedObjects.append(pt)
+                        print(pt)
+
+
             result = cv2.mean(card)
             if result[1] > 10.0:
                 cardArray1[j - 1][i - 1] = 1
-
-            for k in range(0, len(templateArray)):
-                print('')
+    detectedObjects.clear()
 
 
 def grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append):
@@ -162,7 +167,7 @@ def count(index):
 
 count(3)
 
-cv2.imshow('board', gray)
+cv2.imshow('board', board)
 #cv2.imshow('hsv', hsv)
 #cv2.imshow('LGres', LGres)
 #cv2.imshow('LBres', LBres)
