@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import math
 
-
 board = cv2.imread('1.jpg')
 tem1 = cv2.imread('grayTemp1.jpg')
 tem2 = cv2.imread('grayTemp2.jpg')
@@ -90,12 +89,11 @@ templateArray = [grayTem1, grayTem2, grayTem3, grayTem4, grayTem5, grayTem6, gra
 kingTemArray = [kingGray1, kingGray2, kingGray3, kingGray4]
 colorArray = [LGres, LBres, DGres, YLres, GRres]
 
+
 class Score:
     def __init__(self, card, score):
         self.card = card
         self.score = score
-
-
 cards = []
 cardArray1 = np.zeros((5, 5))
 crownArray = np.zeros((5, 5))
@@ -197,10 +195,9 @@ def grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append, crownNumbe
         print(pointArray)
 
 
-groupNumber = 0
-def count(index):
+def count(color):
 
-    img = colorArray[index]
+    img = color
     cv2.imshow('img', img)
     visited = np.zeros((5, 5))
     rasterize(img, visited)
@@ -222,10 +219,17 @@ def count(index):
 def calPoints():
     finalScore = sum(pointArray)
     print(finalScore)
+    return finalScore
 
+allScore = 0
 
-count(4)
-calPoints()
+for color in colorArray:
+    count(color)
+    allScore += calPoints()
+    pointArray = []
+    cardArray1 = np.zeros((5, 5))
+
+print("Final board score: " + str(allScore))
 
 cv2.imshow('board', board)
 #cv2.imshow('hsv', hsv)
