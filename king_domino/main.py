@@ -159,7 +159,7 @@ def rasterize(picture, visited):
     detectedObjects.clear()
 
 
-def grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append, crownNumber):
+def grassFire(x, y, groupSize, visited, XYArray, groupNumber, append, crownNumber):
 
     if append == True:
         visited[x][y] = 1
@@ -170,22 +170,22 @@ def grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append, crownNumbe
 
 
     if x < 4 and visited[x + 1][y] != 1 and cardArray1[x + 1][y] == 1:
-        grassFrie(x + 1, y, groupSize, visited, XYArray, groupNumber, append, crownNumber)
+        grassFire(x + 1, y, groupSize, visited, XYArray, groupNumber, append, crownNumber)
 
     elif y < 4 and visited[x][y + 1] != 1 and cardArray1[x][y + 1] == 1:
-        grassFrie(x, y + 1, groupSize, visited, XYArray, groupNumber, append, crownNumber)
+        grassFire(x, y + 1, groupSize, visited, XYArray, groupNumber, append, crownNumber)
 
     elif x > 0 and visited[x - 1][y] != 1 and cardArray1[x - 1][y] == 1:
-        grassFrie(x - 1, y, groupSize, visited, XYArray, groupNumber, append, crownNumber)
+        grassFire(x - 1, y, groupSize, visited, XYArray, groupNumber, append, crownNumber)
 
     elif y > 0 and visited[x][y - 1] != 1 and cardArray1[x][y - 1] == 1:
-        grassFrie(x, y - 1, groupSize, visited, XYArray, groupNumber, append, crownNumber)
+        grassFire(x, y - 1, groupSize, visited, XYArray, groupNumber, append, crownNumber)
 
     elif XYArray.index([y, x]) != 0:
         append = False
         rowIndex = XYArray.index([y, x]) - 1
         y, x = XYArray[rowIndex]
-        grassFrie(x, y, groupSize, visited, XYArray, groupNumber, append, crownNumber)
+        grassFire(x, y, groupSize, visited, XYArray, groupNumber, append, crownNumber)
 
     else:
         amount = {j: groupSize.count(j) for j in groupSize}
@@ -211,7 +211,7 @@ def count(color):
                 XYArray = []
                 append = True
                 crownNumber = 0
-                grassFrie(rows, cols, groupSize, visited, XYArray, groupNumber, append, crownNumber)
+                grassFire(rows, cols, groupSize, visited, XYArray, groupNumber, append, crownNumber)
             else:
                 visited[rows][cols] = 1
 
